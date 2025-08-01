@@ -112,28 +112,44 @@ case $APP_TYPE in
         
         # Check if Node.js is already available
         if ! command -v node &> /dev/null; then
-            print_status "Node.js not found, checking NVM installation..."
+            print_status "Node.js not found, installing..."
             
-            # Load NVM if available
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            
-            # If NVM is available, use it
-            if command -v nvm &> /dev/null; then
-                print_status "Using NVM to install Node.js..."
-                nvm install 18
-                nvm use 18
+            # Use the robust Node.js installation script
+            if [[ -f "/home/ec2-user/install-nodejs.sh" ]]; then
+                bash /home/ec2-user/install-nodejs.sh
             else
-                print_status "Installing Node.js via system package manager..."
-                # Remove any conflicting packages first
-                sudo yum remove -y nodejs npm || true
+                # Inline installation method
+                print_status "Installing Node.js via NVM..."
                 
-                # Use Amazon Linux extras to install Node.js
-                sudo amazon-linux-extras install -y nodejs
+                # Install NVM
+                curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
                 
-                # If that fails, try direct yum installation
-                if ! command -v node &> /dev/null; then
-                    sudo yum install -y nodejs npm
+                # Load NVM
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                
+                if command -v nvm &> /dev/null; then
+                    nvm install 18
+                    nvm use 18
+                    nvm alias default 18
+                else
+                    print_status "NVM failed, trying binary installation..."
+                    # Download and install Node.js binary
+                    cd /tmp
+                    wget -q https://nodejs.org/dist/v18.20.4/node-v18.20.4-linux-x64.tar.xz
+                    tar -xf node-v18.20.4-linux-x64.tar.xz
+                    
+                    # Create local bin directory
+                    mkdir -p $HOME/bin
+                    cp node-v18.20.4-linux-x64/bin/* $HOME/bin/
+                    
+                    # Add to PATH
+                    echo 'export PATH="$HOME/bin:$PATH"' >> $HOME/.bashrc
+                    export PATH="$HOME/bin:$PATH"
+                    
+                    # Clean up
+                    rm -rf node-v18.20.4-linux-x64*
+                    cd "$APP_DIR"
                 fi
             fi
         fi

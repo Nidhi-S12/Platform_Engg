@@ -86,34 +86,29 @@ resource "aws_instance" "ec2_vm" {
     yum update -y
     
     # Install basic packages
-    yum install -y git docker wget curl
+    yum install -y git docker wget curl gcc-c++ make
     
-    # Remove any existing Node.js packages to avoid conflicts
-    yum remove -y nodejs npm || true
-    
-    # Install Node.js via Node Version Manager (more reliable)
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-    export NVM_DIR="/root/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    nvm install 18
-    nvm use 18
-    nvm alias default 18
-    
-    # Make Node.js available system-wide
-    ln -sf $NVM_DIR/versions/node/$(nvm version)/bin/node /usr/local/bin/node
-    ln -sf $NVM_DIR/versions/node/$(nvm version)/bin/npm /usr/local/bin/npm
-    ln -sf $NVM_DIR/versions/node/$(nvm version)/bin/npx /usr/local/bin/npx
-    
-    # Install Node.js for ec2-user as well
-    sudo -u ec2-user bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash'
-    sudo -u ec2-user bash -c 'export NVM_DIR="/home/ec2-user/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 18 && nvm use 18 && nvm alias default 18'
+    # Install Node.js via official binary for ec2-user
+    sudo -u ec2-user bash -c '
+      cd /home/ec2-user
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+      export NVM_DIR="/home/ec2-user/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      nvm install 18
+      nvm use 18
+      nvm alias default 18
+      
+      # Add to .bashrc for persistence
+      echo "export NVM_DIR=\"/home/ec2-user/.nvm\"" >> /home/ec2-user/.bashrc
+      echo "[ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"" >> /home/ec2-user/.bashrc
+      echo "[ -s \"\$NVM_DIR/bash_completion\" ] && \. \"\$NVM_DIR/bash_completion\"" >> /home/ec2-user/.bashrc
+    '
     
     # Install Python3 and pip
     yum install -y python3 python3-pip
     
     # Install nginx for static sites
-    amazon-linux-extras install -y nginx1
+    amazon-linux-extras install -y nginx1 || yum install -y nginx
     
     # Start and enable services
     systemctl start docker
@@ -125,14 +120,9 @@ resource "aws_instance" "ec2_vm" {
     mkdir -p /home/ec2-user/app
     chown -R ec2-user:ec2-user /home/ec2-user/app
     
-    # Add Node.js to PATH for all users
-    echo 'export PATH="/usr/local/bin:$PATH"' >> /etc/profile
-    echo 'export NVM_DIR="/home/ec2-user/.nvm"' >> /home/ec2-user/.bashrc
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/ec2-user/.bashrc
-    echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /home/ec2-user/.bashrc
-    
     # Signal completion
     echo "✅ EC2 user data script completed successfully" > /var/log/user-data.log
+    date >> /var/log/user-data.log
   EOF
 
   tags = {

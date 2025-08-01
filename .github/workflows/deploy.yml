@@ -181,8 +181,9 @@ jobs:
             sleep 10
           done
           
-          # Copy deployment script to EC2
+          # Copy deployment scripts to EC2
           scp -i private_key.pem -o StrictHostKeyChecking=no deploy.sh ec2-user@${{ needs.terraform-deploy.outputs.instance_ip }}:/home/ec2-user/
+          scp -i private_key.pem -o StrictHostKeyChecking=no install-nodejs.sh ec2-user@${{ needs.terraform-deploy.outputs.instance_ip }}:/home/ec2-user/
           
           # Run deployment script
           ssh -i private_key.pem -o StrictHostKeyChecking=no ec2-user@${{ needs.terraform-deploy.outputs.instance_ip }} \
