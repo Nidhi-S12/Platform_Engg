@@ -110,12 +110,42 @@ case $APP_TYPE in
     "nodejs")
         print_status "Deploying Node.js application..."
         
-        # Install Node.js if not already installed
+        # Check if Node.js is already available
         if ! command -v node &> /dev/null; then
-            print_status "Installing Node.js..."
-            curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-            sudo yum install -y nodejs
+            print_status "Node.js not found, checking NVM installation..."
+            
+            # Load NVM if available
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
+            # If NVM is available, use it
+            if command -v nvm &> /dev/null; then
+                print_status "Using NVM to install Node.js..."
+                nvm install 18
+                nvm use 18
+            else
+                print_status "Installing Node.js via system package manager..."
+                # Remove any conflicting packages first
+                sudo yum remove -y nodejs npm || true
+                
+                # Use Amazon Linux extras to install Node.js
+                sudo amazon-linux-extras install -y nodejs
+                
+                # If that fails, try direct yum installation
+                if ! command -v node &> /dev/null; then
+                    sudo yum install -y nodejs npm
+                fi
+            fi
         fi
+        
+        # Verify Node.js installation
+        if ! command -v node &> /dev/null; then
+            print_error "Failed to install Node.js"
+            exit 1
+        fi
+        
+        print_status "Node.js version: $(node --version)"
+        print_status "NPM version: $(npm --version)"
         
         # Check for package.json
         if [[ ! -f "package.json" ]]; then

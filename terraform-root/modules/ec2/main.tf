@@ -80,23 +80,59 @@ resource "aws_instance" "ec2_vm" {
   # User data script for initial setup
   user_data = <<-EOF
     #!/bin/bash
-    yum update -y
-    yum install -y git docker
+    set -e
     
-    # Install Node.js
-    curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-    yum install -y nodejs
+    # Update system
+    yum update -y
+    
+    # Install basic packages
+    yum install -y git docker wget curl
+    
+    # Remove any existing Node.js packages to avoid conflicts
+    yum remove -y nodejs npm || true
+    
+    # Install Node.js via Node Version Manager (more reliable)
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+    export NVM_DIR="/root/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    nvm install 18
+    nvm use 18
+    nvm alias default 18
+    
+    # Make Node.js available system-wide
+    ln -sf $NVM_DIR/versions/node/$(nvm version)/bin/node /usr/local/bin/node
+    ln -sf $NVM_DIR/versions/node/$(nvm version)/bin/npm /usr/local/bin/npm
+    ln -sf $NVM_DIR/versions/node/$(nvm version)/bin/npx /usr/local/bin/npx
+    
+    # Install Node.js for ec2-user as well
+    sudo -u ec2-user bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash'
+    sudo -u ec2-user bash -c 'export NVM_DIR="/home/ec2-user/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install 18 && nvm use 18 && nvm alias default 18'
     
     # Install Python3 and pip
     yum install -y python3 python3-pip
     
-    # Start Docker
-    service docker start
+    # Install nginx for static sites
+    amazon-linux-extras install -y nginx1
+    
+    # Start and enable services
+    systemctl start docker
+    systemctl enable docker
+    systemctl enable nginx
     usermod -a -G docker ec2-user
     
     # Create app directory
     mkdir -p /home/ec2-user/app
-    chown ec2-user:ec2-user /home/ec2-user/app
+    chown -R ec2-user:ec2-user /home/ec2-user/app
+    
+    # Add Node.js to PATH for all users
+    echo 'export PATH="/usr/local/bin:$PATH"' >> /etc/profile
+    echo 'export NVM_DIR="/home/ec2-user/.nvm"' >> /home/ec2-user/.bashrc
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> /home/ec2-user/.bashrc
+    echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> /home/ec2-user/.bashrc
+    
+    # Signal completion
+    echo "✅ EC2 user data script completed successfully" > /var/log/user-data.log
   EOF
 
   tags = {
