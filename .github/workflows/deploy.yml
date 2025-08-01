@@ -70,6 +70,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       
+      - name: ✅ Validate AWS Credentials
+        run: |
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ] || [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+            echo "❌ ERROR: AWS credentials not found in GitHub Secrets!"
+            echo ""
+            echo "🔧 Quick Fix:"
+            echo "1. Go to: https://github.com/${{ github.repository }}/settings/secrets/actions"
+            echo "2. Add: AWS_ACCESS_KEY_ID (your AWS access key)"
+            echo "3. Add: AWS_SECRET_ACCESS_KEY (your AWS secret key)"
+            echo ""
+            echo "📋 See setup guide: setup-aws-credentials.md"
+            exit 1
+          fi
+          
+          # Test AWS credentials
+          aws sts get-caller-identity
+          echo "✅ AWS credentials validated successfully!"
+      
       - name: 🏗️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:

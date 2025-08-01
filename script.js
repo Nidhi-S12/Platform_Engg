@@ -381,10 +381,15 @@ function handleDeploymentCompletion(run) {
 
 🔗 Check logs: https://github.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/actions/runs/${run.id}
 
-Common issues:
-• AWS credentials not configured in repository secrets
+🔧 Most common fixes:
+• AWS CREDENTIALS MISSING: Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to GitHub repository secrets
 • Invalid repository URL or access permissions
-• Application build/start errors`);
+• Application build/start errors
+
+📋 Setup GitHub Secrets:
+1. Go to GitHub.com → Repository Settings → Secrets and variables → Actions
+2. Add: AWS_ACCESS_KEY_ID (your AWS access key)
+3. Add: AWS_SECRET_ACCESS_KEY (your AWS secret key)`);
   }
 }
 
