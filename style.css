@@ -83,6 +83,205 @@ select, input[type="url"] {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+/* Golden Path Cards */
+.golden-paths-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.golden-path-card {
+  border: 2px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.golden-path-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.golden-path-card.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.golden-path-card.coming-soon {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
+  color: #2c3e50;
+}
+
+.golden-path-card.coming-soon:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #bdc3c7;
+}
+
+.coming-soon-badge {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+.golden-path-card.selected .path-name {
+  color: white;
+}
+
+.golden-path-card.selected .path-description {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.golden-path-card.selected .path-tech-stack {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.path-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.path-description {
+  color: #6c757d;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.path-tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tech-tag {
+  background: #f8f9fa;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.path-features {
+  list-style: none;
+  padding: 0;
+}
+
+.path-features li {
+  color: #6c757d;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.path-features li:before {
+  content: "✓";
+  color: #28a745;
+  font-weight: bold;
+}
+
+.golden-path-card.selected .path-features li {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.golden-path-card.selected .path-features li:before {
+  color: #feca57;
+}
+
+/* Coming Soon Configuration */
+.coming-soon-config {
+  text-align: center;
+  padding: 30px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 2px dashed #bdc3c7;
+}
+
+.coming-soon-config h4 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.coming-soon-config p {
+  color: #6c757d;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.coming-soon-config ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.coming-soon-config li {
+  color: #495057;
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.coming-soon-config li:before {
+  content: "🚧";
+  position: absolute;
+  left: 0;
+}
+
+/* Configuration section updates */
+.config-options {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+}
+
+.config-group {
+  margin-bottom: 20px;
+}
+
+.config-group:last-child {
+  margin-bottom: 0;
+}
+
+.config-group label {
+  display: block;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.config-group select,
+.config-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
 /* GitHub Configuration Styles */
 .config-row {
   display: grid;

@@ -1,20 +1,62 @@
 [
   {
     "id": "gp1",
-    "name": "Golden Path 1",
-    "description": "EC2 + Java + CodeQL + Prometheus"
+    "name": "🚀 Golden Path 1 - EC2 Deployment",
+    "description": "Simple and reliable EC2 instance deployment for any application type",
+    "tech_stack": ["EC2", "Auto-scaling", "Security Groups", "SSH Access"],
+    "features": [
+      "Automated EC2 provisioning",
+      "Multi-language support (Node.js, Python, Static)",
+      "Automatic SSH key management",
+      "Security group configuration",
+      "Real-time deployment monitoring",
+      "Auto-cleanup options"
+    ],
+    "infrastructure": "aws",
+    "app_type": "multi",
+    "instance_type": "t2.micro",
+    "default_port": 3000,
+    "workflow_file": "deploy.yml",
+    "status": "functional"
   },
   {
     "id": "gp2",
-    "name": "Golden Path 2",
-    "description": "AZUREVM + NodeJS + CodeQL + Prometheus"
+    "name": "☁️ Golden Path 2 - EKS with Node.js",
+    "description": "Kubernetes-powered Node.js applications with enterprise monitoring and security",
+    "tech_stack": ["EKS", "Node.js", "Prometheus", "CodeQL", "Docker", "Kubernetes"],
+    "features": [
+      "EKS cluster provisioning",
+      "Node.js containerized deployment",
+      "CodeQL security scanning",
+      "Prometheus monitoring stack",
+      "Auto-scaling pods",
+      "Service mesh integration"
+    ],
+    "infrastructure": "aws",
+    "app_type": "nodejs",
+    "instance_type": "t3.medium",
+    "default_port": 3000,
+    "workflow_file": "deploy-eks-nodejs.yml",
+    "status": "coming_soon"
   },
-
- {
+  {
     "id": "gp3",
-    "name": "Golden Path 3",
-    "description": "Deploys an Azure Virtual Machine.",
-    "category": "Infrastructure",
-    "terraform_module": "terraform-azurerm-modules/vm/azure"
+    "name": "🐍 Golden Path 3 - EKS with Python",
+    "description": "Secure Python deployment on Kubernetes with comprehensive security scanning",
+    "tech_stack": ["EKS", "Python", "Prometheus", "GitLeaks", "Trivy", "Flask/Django"],
+    "features": [
+      "EKS cluster with Python runtime",
+      "GitLeaks secret scanning",
+      "Trivy vulnerability assessment",
+      "Prometheus metrics collection",
+      "Container security policies",
+      "ML/AI workload optimization"
+    ],
+    "infrastructure": "aws",
+    "app_type": "python",
+    "instance_type": "t3.medium",
+    "default_port": 5000,
+    "workflow_file": "deploy-eks-python.yml",
+    "status": "coming_soon"
   }
 ]

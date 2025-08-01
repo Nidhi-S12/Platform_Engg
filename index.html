@@ -3,57 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EC2 Deployment Platform</title>
+  <title>Golden Path Deployment Platform</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header class="header">
-      <h1>🚀 GP1 Deployment Platform</h1>
-      <p>Automated CI/CD Pipeline for AWS EC2 Infrastructure</p>
+      <h1>🚀 Golden Path Deployment Platform</h1>
+      <p>Select your Golden Path and deploy instantly with pre-configured CI/CD pipelines</p>
     </header>
 
     <div class="deployment-form">
       <div class="section">
-        <h2>⚙️ GitHub Configuration</h2>
-        <div class="config-row">
-          <div class="config-field">
-            <label for="github-owner">Repository Owner:</label>
-            <input type="text" id="github-owner" placeholder="your-github-username" />
-          </div>
-          <div class="config-field">
-            <label for="github-repo">Repository Name:</label>
-            <input type="text" id="github-repo" placeholder="repository-name" />
-          </div>
+        <h2>🎯 Choose Your Golden Path</h2>
+        <div id="golden-paths-container">
+          <!-- Golden paths will be loaded dynamically -->
         </div>
+      </div>
+
+      <div class="section" id="repo-section">
+        <h2>📂 Your Application Repository</h2>
+        <input type="url" id="repo-url" class="form-input" placeholder="https://github.com/username/your-application-repository" />
         <div class="config-info">
-          <p>💡 Enter the GitHub owner and repository name where this platform is hosted and the deploy.yml workflow exists.</p>
+          <p>💡 Enter the GitHub repository URL of your application that you want to deploy using the selected Golden Path.</p>
         </div>
       </div>
 
-      <div class="section">
-        <h2>🔧 Instance Configuration</h2>
-        <select id="instance-type" class="form-select">
-          <option value="">-- Select Instance Type --</option>
-          <option value="t2.micro">t2.micro (1 vCPU, 1 GB RAM)</option>
-          <option value="t2.small">t2.small (1 vCPU, 2 GB RAM)</option>
-          <option value="t2.medium">t2.medium (2 vCPU, 4 GB RAM)</option>
-        </select>
-      </div>
-
-      <div class="section">
-        <h2>📦 Application Type</h2>
-        <select id="app-type" class="form-select">
-          <option value="">-- Select Application --</option>
-          <option value="nodejs">Node.js Web Application</option>
-          <option value="python">Python Flask Application</option>
-          <option value="static">Static Website</option>
-        </select>
-      </div>
-
-      <div class="section">
-        <h2>📂 Repository URL</h2>
-        <input type="url" id="repo-url" class="form-input" placeholder="https://github.com/username/repository" />
+      <div class="section" id="config-section" style="display: none;">
+        <h2>⚙️ Configuration</h2>
+        <div id="config-options">
+          <!-- Configuration options will be shown based on selected Golden Path -->
+        </div>
       </div>
 
       <div class="section">
@@ -66,9 +46,9 @@
       </div>
 
       <div class="deployment-actions">
-        <button onclick="triggerDeployment()" class="deploy-btn">
+        <button onclick="deployGoldenPath()" class="deploy-btn" id="deploy-btn" disabled>
           <span class="btn-icon">🚀</span>
-          Deploy EC2 Instance
+          Deploy Golden Path
         </button>
         <button onclick="clearGitHubToken()" class="clear-token-btn" title="Clear stored GitHub token">
           🔐 Clear Token
