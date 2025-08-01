@@ -112,44 +112,54 @@ case $APP_TYPE in
         
         # Check if Node.js is already available
         if ! command -v node &> /dev/null; then
-            print_status "Node.js not found, installing..."
+            print_status "Node.js not found, installing compatible version for Amazon Linux 2..."
             
             # Use the robust Node.js installation script
             if [[ -f "/home/ec2-user/install-nodejs.sh" ]]; then
                 bash /home/ec2-user/install-nodejs.sh
             else
-                # Inline installation method
-                print_status "Installing Node.js via NVM..."
+                # Install Node.js 16 (compatible with Amazon Linux 2 GLIBC)
+                print_status "Installing Node.js 16 (Amazon Linux 2 compatible)..."
                 
-                # Install NVM
+                # Method 1: Try NVM with Node.js 16
                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-                
-                # Load NVM
                 export NVM_DIR="$HOME/.nvm"
                 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
                 
                 if command -v nvm &> /dev/null; then
-                    nvm install 18
-                    nvm use 18
-                    nvm alias default 18
+                    nvm install 16.20.2  # LTS version compatible with Amazon Linux 2
+                    nvm use 16.20.2
+                    nvm alias default 16.20.2
+                    print_status "Node.js 16.20.2 installed via NVM"
                 else
-                    print_status "NVM failed, trying binary installation..."
-                    # Download and install Node.js binary
+                    # Method 2: Manual installation of compatible binary
+                    print_status "NVM failed, installing Node.js 16 binary..."
                     cd /tmp
-                    wget -q https://nodejs.org/dist/v18.20.4/node-v18.20.4-linux-x64.tar.xz
-                    tar -xf node-v18.20.4-linux-x64.tar.xz
+                    
+                    # Download Node.js 16.20.2 (compatible with older GLIBC)
+                    wget -q https://nodejs.org/dist/v16.20.2/node-v16.20.2-linux-x64.tar.xz
+                    tar -xf node-v16.20.2-linux-x64.tar.xz
                     
                     # Create local bin directory
                     mkdir -p $HOME/bin
-                    cp node-v18.20.4-linux-x64/bin/* $HOME/bin/
+                    cp node-v16.20.2-linux-x64/bin/* $HOME/bin/
                     
                     # Add to PATH
                     echo 'export PATH="$HOME/bin:$PATH"' >> $HOME/.bashrc
                     export PATH="$HOME/bin:$PATH"
                     
                     # Clean up
-                    rm -rf node-v18.20.4-linux-x64*
+                    rm -rf node-v16.20.2-linux-x64*
                     cd "$APP_DIR"
+                    print_status "Node.js 16.20.2 installed via binary"
+                fi
+                
+                # Method 3: If both fail, try system package manager
+                if ! command -v node &> /dev/null; then
+                    print_status "Trying system package manager as fallback..."
+                    # Use Amazon Linux 2 extras
+                    sudo amazon-linux-extras enable nodejs14 || true
+                    sudo yum install -y nodejs npm || true
                 fi
             fi
         fi

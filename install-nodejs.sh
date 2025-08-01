@@ -18,7 +18,7 @@ print_error() {
 }
 
 install_nodejs() {
-    print_status "Installing Node.js 18 on Amazon Linux 2..."
+    print_status "Installing Node.js 16 (Amazon Linux 2 compatible)..."
     
     # Method 1: Try NVM first (most reliable)
     if ! command -v node &> /dev/null; then
@@ -32,53 +32,67 @@ install_nodejs() {
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         
         if command -v nvm &> /dev/null; then
-            nvm install 18
-            nvm use 18
-            nvm alias default 18
-            print_success "Node.js installed via NVM"
+            nvm install 16.20.2  # LTS version compatible with Amazon Linux 2
+            nvm use 16.20.2
+            nvm alias default 16.20.2
+            print_success "Node.js 16.20.2 installed via NVM"
             return 0
         fi
     fi
     
-    # Method 2: Official binary download
+    # Method 2: Official binary download (Node.js 16)
     if ! command -v node &> /dev/null; then
-        print_status "Method 2: Installing via official binary..."
+        print_status "Method 2: Installing Node.js 16 binary (GLIBC compatible)..."
         
         cd /tmp
-        wget https://nodejs.org/dist/v18.20.4/node-v18.20.4-linux-x64.tar.xz
-        tar -xf node-v18.20.4-linux-x64.tar.xz
+        wget https://nodejs.org/dist/v16.20.2/node-v16.20.2-linux-x64.tar.xz
+        tar -xf node-v16.20.2-linux-x64.tar.xz
         
         # Create local bin directory if it doesn't exist
         mkdir -p $HOME/bin
         
         # Copy binaries
-        cp node-v18.20.4-linux-x64/bin/* $HOME/bin/
+        cp node-v16.20.2-linux-x64/bin/* $HOME/bin/
         
         # Add to PATH
         echo 'export PATH="$HOME/bin:$PATH"' >> $HOME/.bashrc
         export PATH="$HOME/bin:$PATH"
         
         # Clean up
-        rm -rf node-v18.20.4-linux-x64*
+        rm -rf node-v16.20.2-linux-x64*
         
         if command -v node &> /dev/null; then
-            print_success "Node.js installed via binary download"
+            print_success "Node.js 16.20.2 installed via binary download"
             return 0
         fi
     fi
     
-    # Method 3: Build from source (last resort)
+    # Method 3: Amazon Linux Extras (Node.js 14)
     if ! command -v node &> /dev/null; then
-        print_status "Method 3: Building from source..."
+        print_status "Method 3: Installing via Amazon Linux Extras..."
+        
+        # Enable nodejs14 from amazon-linux-extras
+        sudo amazon-linux-extras enable nodejs14 || true
+        sudo yum install -y nodejs npm || true
+        
+        if command -v node &> /dev/null; then
+            print_success "Node.js installed via Amazon Linux Extras"
+            return 0
+        fi
+    fi
+    
+    # Method 4: Build from source (last resort - Node.js 16)
+    if ! command -v node &> /dev/null; then
+        print_status "Method 4: Building Node.js 16 from source..."
         
         # Install build dependencies
         sudo yum groupinstall -y "Development Tools"
         sudo yum install -y python3
         
         cd /tmp
-        wget https://nodejs.org/dist/v18.20.4/node-v18.20.4.tar.gz
-        tar -xzf node-v18.20.4.tar.gz
-        cd node-v18.20.4
+        wget https://nodejs.org/dist/v16.20.2/node-v16.20.2.tar.gz
+        tar -xzf node-v16.20.2.tar.gz
+        cd node-v16.20.2
         
         ./configure --prefix=$HOME
         make -j$(nproc)
@@ -89,10 +103,10 @@ install_nodejs() {
         export PATH="$HOME/bin:$PATH"
         
         cd /
-        rm -rf /tmp/node-v18.20.4*
+        rm -rf /tmp/node-v16.20.2*
         
         if command -v node &> /dev/null; then
-            print_success "Node.js built and installed from source"
+            print_success "Node.js 16 built and installed from source"
             return 0
         fi
     fi

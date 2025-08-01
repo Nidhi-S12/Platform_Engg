@@ -88,15 +88,15 @@ resource "aws_instance" "ec2_vm" {
     # Install basic packages
     yum install -y git docker wget curl gcc-c++ make
     
-    # Install Node.js via official binary for ec2-user
+    # Install Node.js via official binary for ec2-user (Amazon Linux 2 compatible)
     sudo -u ec2-user bash -c '
       cd /home/ec2-user
       curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
       export NVM_DIR="/home/ec2-user/.nvm"
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      nvm install 18
-      nvm use 18
-      nvm alias default 18
+      nvm install 16.20.2
+      nvm use 16.20.2
+      nvm alias default 16.20.2
       
       # Add to .bashrc for persistence
       echo "export NVM_DIR=\"/home/ec2-user/.nvm\"" >> /home/ec2-user/.bashrc
