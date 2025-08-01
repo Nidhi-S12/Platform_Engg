@@ -1,0 +1,20 @@
+[
+  {
+    "id": "gp1",
+    "name": "Golden Path 1",
+    "description": "EC2 + Java + CodeQL + Prometheus"
+  },
+  {
+    "id": "gp2",
+    "name": "Golden Path 2",
+    "description": "AZUREVM + NodeJS + CodeQL + Prometheus"
+  },
+
+ {
+    "id": "gp3",
+    "name": "Golden Path 3",
+    "description": "Deploys an Azure Virtual Machine.",
+    "category": "Infrastructure",
+    "terraform_module": "terraform-azurerm-modules/vm/azure"
+  }
+]

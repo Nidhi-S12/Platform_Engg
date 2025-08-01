@@ -1,0 +1,14 @@
+﻿name: Deploy EC2 Instance with Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance_type:
+        description: 'EC2 Instance Type'
+        required: true
+        default: 't2.micro'
+        type: choice
+        options:
+          - t2.micro
+          - t2.small
+          - t2.medium
